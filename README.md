@@ -22,4 +22,9 @@ pip install streamlit pdfplumber pandas
 
 ```
 streamlit run main.py
+<<<<<<< HEAD
 ```
+=======
+```
+
+>>>>>>> 2d4798e73dca757e209a674eee10485dc8b8fbd2
