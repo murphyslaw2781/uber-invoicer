@@ -1,6 +1,5 @@
 import streamlit as st
 import pdfplumber
-import pandas as pd
 import os
 import re
 
