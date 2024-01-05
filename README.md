@@ -1,2 +1,4 @@
 # uber-invoicer
-Converts my Uber Invoices
+Converts Uber Invoices to CSVs
+
+
