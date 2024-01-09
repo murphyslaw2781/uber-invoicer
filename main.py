@@ -1,6 +1,7 @@
 import streamlit as st
 import pdfplumber
 import pandas as pd
+import time
 from datetime import datetime
 import os
 import re
@@ -215,6 +216,15 @@ def main():
 
         all_data = []
         all_missing_items = {}
+        status_message = st.empty()
+        progress_bar = st.progress(0)
+
+        for i in range(100):
+            status_message.text(f"Processing... {i+1}%")
+            progress_bar.progress(i + 1)
+            time.sleep(0.1)
+
+        status_message.text("Processing Complete!")
         for uploaded_file in uploaded_files:
             try:
                 bytes_data = uploaded_file.read()
