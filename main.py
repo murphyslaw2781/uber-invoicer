@@ -9,7 +9,7 @@ import re
 # Set Streamlit page configuration
 st.set_page_config(
     layout="wide",
-    page_title="UBER PDF to CSV Processor",
+    page_title="UBER Invoice Analyzer",
     page_icon="🚗"
 )
 
@@ -230,7 +230,7 @@ def calculate_stats(all_data):
 
 # Define the main content of your app
 def main():
-    st.title('UBER PDF to CSV Processor')
+    st.title('UBER Invoice Analyzer\nUpload PDFs to analyze')
     with st.sidebar:
         uploaded_files = st.file_uploader(
             "Choose PDF files", accept_multiple_files=True, type=['pdf'])
