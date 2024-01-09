@@ -14,6 +14,66 @@ st.set_page_config(
 )
 
 
+# Define global patterns
+global_patterns = {
+    'Rider Name': r"Thanks for tipping, (.*)",
+    'Date of Invoice': r"(\w+ \d{1,2}, \d{4})",
+    'Driver Name': r"You rode with (.*)",
+    'Pickup and Dropoff': r"(\d{1,2}:\d{2} [AP]M) \| (.*)",
+    # ... Add all other patterns here ...
+}
+# Define patterns for Canada
+patterns_ca = {
+    'Service Type, Distance, and Duration': r"(UberX|UberPool|UberXL|UberBlack|UberSUV)\s+(\d+\.\d+) kilometers \| (\d+)",
+    'Vehicle License Plate': r"License Plate: (.*)",
+    'Trip Fare': r"(Trip fare|Normal Fare) CA\$(\d+\.\d+)",
+    'Distance': r"Distance CA\$(\d+\.\d+)",
+    'Time': r"Time CA\$(\d+\.\d+)",
+    'Base Fare': r"Base Fare CA\$(\d+\.\d+)",
+    'Tips': r"Tips CA\$(\d+\.\d+)",
+    'Promotion': r"Promotion -CA\$(\d+\.\d+)",
+    'Taxes (HST)': r"HST CA\$(\d+\.\d+)",
+    'Total Amount': r"Total CA\$(\d+\.\d+)",
+    'Payment Method': r"(Cash|Visa|Mastercard|American Express|PayPal|Work card)",
+    'Card Charged Date': r"(\d{1,2}/\d{1,2}/\d{2,4} \d{1,2}:\d{2} [AP]M)",
+
+    # ... [Other Canadian-specific patterns] ...
+}
+ca_fees = {'Booking Fee': r"Booking Fee CA\$(\d+\.\d+)",
+            'Toronto Fee Recovery Surcharges': r"Toronto Fee Recovery Surcharges CA\$(\d+\.\d+)",
+            'Toronto Accessibility Fee Recovery Surcharges': r"Toronto Accessibility Fee Recovery Surcharges CA\$(\d+\.\d+)",
+            'Mississauga Fee Recovery Surcharge': r"Mississauga Fee Recovery Surcharge CA\$(\d+\.\d+)",
+            'Uber Airport Surcharge': r"Uber Airport Surcharge CA\$(\d+\.\d+)",
+            'Toronto Prearranged Ride Surcharge': r"Toronto Prearranged Ride Surcharge CA\$(\d+\.\d+)",
+            'Toronto Accessibility Prearranged Ride Surcharge': r"Toronto Accessibility Prearranged Ride Surcharge CA\$(\d+\.\d+)",
+            'Toronto Accessibility Fee': r"Toronto Accessibility Fee CA\$(\d+\.\d+)",
+            'Surge': r"Surge CA\$(\d+\.\d+)",
+            'Surge x2': r"Surge x2 CA\$(\d+\.\d+)",
+            'Surge x3': r"Surge x3 CA\$(\d+\.\d+)",
+            'Wait Time': r"Wait Time CA\$(\d+\.\d+)", 
+            }
+
+# Define patterns for USA
+patterns_us = {
+    'Service Type, Distance, and Duration': r"(UberX|UberPool|UberXL|UberBlack|UberSUV)\s+(\d+\.\d+) miles \| (\d+)",
+    'Vehicle License Plate': r"License Plate: (.*)",
+    'Trip Fare': r"(Trip fare|Normal Fare) \$(\d+\.\d+)",
+    'Distance': r"Distance \$(\d+\.\d+)",
+    'Time': r"Time \$(\d+\.\d+)",
+    'Base Fare': r"Base Fare \$(\d+\.\d+)",
+    'Tips': r"Tips \$(\d+\.\d+)",
+    'Taxes (HST)': r"HST \$(\d+\.\d+)",
+    'Total Amount': r"Total \$(\d+\.\d+)",
+    'Payment Method': r"(Cash|Visa|Mastercard|American Express|PayPal|Work card)",
+    'Card Charged Date': r"(\d{1,2}/\d{1,2}/\d{2,4} \d{1,2}:\d{2} [AP]M)",
+
+}
+us_fees = {
+    'Booking Fee': r"Booking Fee \$(\d+\.\d+)",
+    'Colorado Prearranged Ride Regulatory Fee': r"Colorado Prearranged Ride Regulatory Fee \$(\d+\.\d+)",
+    'Surge': r"Surge \$(\d+\.\d+)",
+    'Wait Time': r"Wait Time \$(\d+\.\d+)"
+}
 def extract_data_from_pdf(pdf_file, new_pattern=None):
     # Initialize a dictionary to hold extracted data
     personal_data = {
@@ -44,68 +104,18 @@ def extract_data_from_pdf(pdf_file, new_pattern=None):
         country = "Canada" if "Total CA$" in text else "USA"
         personal_data['Country'] = country
 
-        # Define global patterns
-        global_patterns = {
-            'Rider Name': r"Thanks for tipping, (.*)",
-            'Date of Invoice': r"(\w+ \d{1,2}, \d{4})",
-            'Driver Name': r"You rode with (.*)",
-            'Pickup and Dropoff': r"(\d{1,2}:\d{2} [AP]M) \| (.*)",
-            # ... Add all other patterns here ...
-        }
-        # Define patterns for Canada
-        patterns_ca = {
-            'Service Type, Distance, and Duration': r"(UberX|UberPool|UberXL|UberBlack|UberSUV)\s+(\d+\.\d+) kilometers \| (\d+)",
-            'Vehicle License Plate': r"License Plate: (.*)",
-            'Trip Fare': r"(Trip fare|Normal Fare) CA\$(\d+\.\d+)",
-            'Booking Fee': r"Booking Fee CA\$(\d+\.\d+)",
-            'Distance': r"Distance CA\$(\d+\.\d+)",
-            'Time': r"Time CA\$(\d+\.\d+)",
-            'Base Fare': r"Base Fare CA\$(\d+\.\d+)",
-            'Surge': r"Surge CA\$(\d+\.\d+)",
-            'Surge x2': r"Surge x2 CA\$(\d+\.\d+)",
-            'Wait Time': r"Wait Time CA\$(\d+\.\d+)",
-            'Tips': r"Tips CA\$(\d+\.\d+)",
-            'Promotion': r"Promotion -CA\$(\d+\.\d+)",
-            'Toronto Fee Recovery Surcharges': r"Toronto Fee Recovery Surcharges CA\$(\d+\.\d+)",
-            'Toronto Accessibility Fee Recovery Surcharges': r"Toronto Accessibility Fee Recovery Surcharges CA\$(\d+\.\d+)",
-            'Mississauga Fee Recovery Surcharge': r"Mississauga Fee Recovery Surcharge CA\$(\d+\.\d+)",
-            'Uber Airport Surcharge': r"Uber Airport Surcharge CA\$(\d+\.\d+)",
-            'Taxes (HST)': r"HST CA\$(\d+\.\d+)",
-            'Total Amount': r"Total CA\$(\d+\.\d+)",
-            'Payment Method': r"(Cash|Visa|Mastercard|American Express|PayPal|Work card)",
-            'Card Charged Date': r"(\d{1,2}/\d{1,2}/\d{2,4} \d{1,2}:\d{2} [AP]M)",
 
-            # ... [Other Canadian-specific patterns] ...
-        }
-
-        # Define patterns for USA
-        patterns_us = {
-            'Service Type, Distance, and Duration': r"(UberX|UberPool|UberXL|UberBlack|UberSUV)\s+(\d+\.\d+) miles \| (\d+)",
-            'Vehicle License Plate': r"License Plate: (.*)",
-            'Trip Fare': r"(Trip fare|Normal Fare) \$(\d+\.\d+)",
-            'Booking Fee': r"Booking Fee \$(\d+\.\d+)",
-            'Distance': r"Distance CA\$(\d+\.\d+)",
-            'Time': r"Time CA\$(\d+\.\d+)",
-            'Base Fare': r"Base Fare CA\$(\d+\.\d+)",
-            'Surge': r"Surge \$(\d+\.\d+)",
-            'Wait Time': r"Wait Time \$(\d+\.\d+)",
-            'Tips': r"Tips \$(\d+\.\d+)",
-            'Toronto Fee Recovery Surcharges': r"Toronto Fee Recovery Surcharges \$(\d+\.\d+)",
-            'Toronto Accessibility Fee Recovery Surcharges': r"Toronto Accessibility Fee Recovery Surcharges \$(\d+\.\d+)",
-            'Colorado Prearranged Ride Regulatory Fee': r"Colorado Prearranged Ride Regulatory Fee \$(\d+\.\d+)",
-            'Taxes (HST)': r"HST \$(\d+\.\d+)",
-            'Total Amount': r"Total \$(\d+\.\d+)",
-            'Payment Method': r"(Cash|Visa|Mastercard|American Express|PayPal|Work card)",
-            'Card Charged Date': r"(\d{1,2}/\d{1,2}/\d{2,4} \d{1,2}:\d{2} [AP]M)",
-
-        }
 
         # Choose the correct set of patterns based on the country
         patterns = patterns_ca if country == "Canada" else patterns_us
         # Add new pattern to the dictionary
         if new_pattern:
             patterns[new_pattern[0]] = new_pattern[1]
-            print(patterns)
+        # add fees to the dictionary
+        if country == "Canada":
+            patterns = {**patterns, **ca_fees}
+        else:
+            patterns = {**patterns, **us_fees}
         # merge the global patterns with the country specific patterns
         patterns = {**global_patterns, **patterns}
 
@@ -128,7 +138,14 @@ def extract_data_from_pdf(pdf_file, new_pattern=None):
                     dropoff_match = matches[-1]
                     personal_data['Dropoff Time'] = dropoff_match[0].strip()
                     personal_data['Dropoff Address'] = dropoff_match[1].strip()
-
+            elif key == 'Rider Name':
+                match = re.search(pattern, text)
+                if match:
+                    personal_data[key] = match.group(1).strip()
+            elif key == 'Trip Fare':
+                match = re.search(pattern, text)
+                if match:
+                    personal_data[key] = match.group(2).strip()
             else:
                 match = re.search(pattern, text)
                 if match:
@@ -191,59 +208,95 @@ def update_csv_with_new_pattern(pdf_file, new_pattern, original_data, output_csv
 
     return output_csv_path
 
+
+def calculate_stats(all_data):
+    total_spent = sum(float(data.get('Total Amount', 0)) for data in all_data)
+    highest_cost = max(float(data.get('Total Amount', 0)) for data in all_data)
+
+    # Calculate average trip time
+    total_trip_time = sum(int(data.get('Trip Duration', 0))
+                          for data in all_data if data.get('Trip Duration', 0) != '')
+    average_trip_time = total_trip_time / len(all_data) if all_data else 0
+
+    # Calculate Fees, Taxes, and Tips
+    total_fees = sum(float(data.get(key, 0))
+                     for data in all_data for key in ca_fees.keys() | us_fees.keys())
+    total_taxes = sum(float(data.get('Taxes (HST)', 0)) for data in all_data if data.get('Taxes (HST)', 0) != '')
+
+    total_tips = sum(float(data.get('Tips', 0)) for data in all_data)
+
+    return total_spent, highest_cost, average_trip_time, total_fees, total_taxes, total_tips
+
+
 # Define the main content of your app
-
-
 def main():
     st.title('UBER PDF to CSV Processor')
-
-    # Sidebar for file upload and processing button
     with st.sidebar:
-        st.write("## Upload PDFs")
         uploaded_files = st.file_uploader(
             "Choose PDF files", accept_multiple_files=True, type=['pdf'])
-
         process_button = st.button('Process PDFs to CSV', key='process_button')
 
-    # Main content area
     if process_button and uploaded_files:
-        # Check for duplicate filenames
         filenames = [uploaded_file.name for uploaded_file in uploaded_files]
         if len(filenames) != len(set(filenames)):
             st.error(
                 'Duplicate filenames detected. Please ensure all files have unique names.')
-            st.stop()
+        else:
+            all_data = []
+            all_missing_items = {}
+            status_message = st.empty()
+            progress_bar = st.progress(0)
 
-        all_data = []
-        all_missing_items = {}
-        status_message = st.empty()
-        progress_bar = st.progress(0)
+            num_files = len(uploaded_files)
+            for index, uploaded_file in enumerate(uploaded_files):
+                try:
+                    # Update progress and status message
+                    progress = int((index / num_files) * 100)
+                    progress_bar.progress(progress)
+                    status_message.text(f"Processing {uploaded_file.name}...")
 
-        for i in range(100):
-            status_message.text(f"Processing... {i+1}%")
-            progress_bar.progress(i + 1)
-            time.sleep(0.1)
+                    # Processing logic
+                    bytes_data = uploaded_file.read()
+                    with open(uploaded_file.name, "wb") as f:
+                        f.write(bytes_data)
+                    extracted_data, missing_patterns = extract_data_from_pdf(
+                        uploaded_file.name)
+                    all_data.append(extracted_data)
+                    all_missing_items[uploaded_file.name] = missing_patterns
+                    os.remove(uploaded_file.name)
 
-        status_message.text("Processing Complete!")
-        for uploaded_file in uploaded_files:
-            try:
-                bytes_data = uploaded_file.read()
-                # Save the uploaded file temporarily for processing
-                with open(uploaded_file.name, "wb") as f:
-                    f.write(bytes_data)
+                except Exception as e:
+                    st.error(f'Error processing {uploaded_file.name}: {e}')
 
-                extracted_data, missing_patterns = extract_data_from_pdf(
-                    uploaded_file.name)
-                all_data.append(extracted_data)
-                all_missing_items[uploaded_file.name] = missing_patterns
-                # Remove the PDF file after processing
-                os.remove(uploaded_file.name)
-
-            except Exception as e:
-                st.error(f'Error processing {uploaded_file.name}: {e}')
-                continue  # Skip this file and continue with the next
+            # Finalize progress
+            progress_bar.progress(100)
+            status_message.text("Processing Complete!")
 
         if all_data:  # Check if there's any data processed successfully
+            # Calculate stats after processing all files
+            total_spent, highest_cost, average_trip_time, total_fees, total_taxes,total_tips = calculate_stats(
+                all_data)
+
+            # Display stats
+            col1, col2, col3, col4, col5, col6 = st.columns(6)
+            with col1:
+                st.metric(label="Total Spent on Uber",
+                          value=f"${total_spent:.2f}")
+            with col2:
+                st.metric(label="Highest Cost Trip",
+                          value=f"${highest_cost:.2f}")
+            with col3:
+                st.metric(label="Average Trip Time (minutes)",
+                          value=f"{average_trip_time:.2f}")
+            with col4:
+                st.metric(label="Total Fees",
+                          value=f"${total_fees:.2f}")
+            with col5:
+                st.metric(label="Total Taxes",
+                          value=f"${total_taxes:.2f}")
+            with col6:
+                st.metric(label="Total Tips", value=f"${total_tips:.2f}")
+
             output_csv_path = 'processed_data.csv'
             create_csv(all_data, output_csv_path)
             st.success('PDFs have been processed and converted to CSV!')
